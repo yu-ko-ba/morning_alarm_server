@@ -6,7 +6,7 @@ import os, json
 flask = Flask(__name__)
 
 
-def main():
+def main(debug=False):
     # 日本語で文字化けしないようにする
     flask.config["JSON_AS_ASCII"] = False
     # 勝手にソートしないようにする
@@ -16,7 +16,7 @@ def main():
     create_json_file()
 
     # サーバーを起動する
-    flask.run(debug=True)
+    flask.run(debug=debug)
 
 
 # アラームのリストを記録するJSONファイルが存在しなかったら作る、ディレクトリも無かったら作る

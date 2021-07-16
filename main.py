@@ -50,11 +50,29 @@ def alarm_list():
     return jsonify(get_alarm_list())
 
 
-@flask.route("/set/<time>")
-def set_alarm(time=None):
-    return time
+def add_to_json(time, debug=False):
+    file = open("./json/alarm_list.json", 'r', encoding="UTF-8")
+    data = json.load(file)
+    for i in range(100):
+        i = str(i).zfill(2)
+        if i not in data["data"]:
+            data["data"][i] = time
+
+            with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
+                json.dump(data, f, indent=4)
+
+            break
+
+    if debug:
+        print("新しく追加することができませんでした。")
+
+
+@flask.route("/add/<time>")
+def add_alarm(time=None):
+    add_to_json(time)
+    return jsonify(get_alarm_list())
 
 
 # main関数を実行する
 if __name__ == '__main__':
-    main()
+    main();

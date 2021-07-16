@@ -1,9 +1,7 @@
 from flask import Flask, jsonify
-import main, os, json
+import main, os, json, time
 
-main.main(True)
-
-# main.create_json_file(True)
+main.create_json_file(True)
 
 # alarm_list = json.load(open("./json/alarm_list.json", "r", encoding="UTF-8"))
 

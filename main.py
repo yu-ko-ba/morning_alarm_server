@@ -1,6 +1,6 @@
 # モーニングアラームのアラームリストを管理するサーバー
 from flask import Flask, jsonify
-import os, json
+import os, json, time
 
 
 flask = Flask(__name__)
@@ -28,7 +28,12 @@ def create_json_file(force=False):
     path = "./json/alarm_list.json"
     if not os.path.isfile(path) or force:
         with open(path, "w", encoding="UTF-8") as file:
-            file.write("{}")
+            data = {
+                    "last_updated" : time.time(),
+                    "data" : {
+                        }
+                    }
+            json.dump(data, file, indent=4)
 
 
 @flask.route("/")

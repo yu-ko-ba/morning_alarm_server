@@ -82,6 +82,26 @@ def add_alarm(time=None):
     return jsonify(get_alarm_list())
 
 
+# アラームを削除する関数
+def remove_alarm_from_json(id):
+    # JSONファイルからデータを読み込む
+    file = open("./json/alarm_list.json", 'r', encoding="UTF-8")
+    # 読み込んだデータをJSON形式に変換する
+    data = json.load(file)
+    # 指定されたIDのアラームを削除する
+    del data["data"][id]
+    # JSONファイルに書き込む
+    with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
+        json.dump(data, f, indent=4)
+
+
+# アラームを削除するAPI
+@flask.route("/remove/<id>")
+def remove_alarm(id=None):
+    remove_alarm_from_json(id)
+    return jsonify(get_alarm_list())
+
+
 # main関数を実行する
 if __name__ == '__main__':
     main();

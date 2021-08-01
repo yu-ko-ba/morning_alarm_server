@@ -66,8 +66,9 @@ def add_to_json(time, debug=False):
             with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
                 json.dump(data, f, indent=4)
 
-            break
+            return
 
+    # IDが'00'から'99'まですべて割り振られていたらメッセージを出力する
     if debug:
         print("新しく追加することができませんでした。")
 

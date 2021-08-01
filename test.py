@@ -13,7 +13,10 @@ import main, os, json, time
 # print(type({"hoge": "fuga"}))
 # main.get_alarm_list()
 
-main.create_json_file(True)
-for i in range(0, 101):
-    main.add_to_json("12:34", debug=True)
+main.create_json_file(False)
+
+# for i in range(0, 101):
+    # main.add_to_json("12:34", debug=True)
+
+main.add_to_json("12:34", debug=True)
 print(main.get_alarm_list())

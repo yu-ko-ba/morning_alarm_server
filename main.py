@@ -52,8 +52,8 @@ def alarm_list():
     return jsonify(get_alarm_list())
 
 
-# アラームリストにアラームを追加する
-def add_to_json(time, debug=False):
+# アラームリストに時間を追加する
+def add_to_json(add_time, debug=False):
     file = open("./json/alarm_list.json", 'r', encoding="UTF-8")
     data = json.load(file)
     # アラームにIDを割り当てる
@@ -61,11 +61,13 @@ def add_to_json(time, debug=False):
     for i in range(100):
         i = str(i).zfill(2)
         if i not in data["data"]:
-            data["data"][i] = time
-
+            data["data"][i] = add_time
+            # 最終更新日時を更新する
+            data["last_updated"] = time.time()
+            # JSONファイルに書き込む
             with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
                 json.dump(data, f, indent=4)
-
+            # IDを割り振れたらこの関数を終了する
             return
 
     # IDが'00'から'99'まですべて割り振られていたらメッセージを出力する

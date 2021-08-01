@@ -90,6 +90,8 @@ def remove_alarm_from_json(id):
     data = json.load(file)
     # 指定されたIDのアラームを削除する
     del data["data"][id]
+    # 最終更新日時を更新する
+    data["last_updated"] = time.time()
     # JSONファイルに書き込む
     with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
         json.dump(data, f, indent=4)
@@ -104,4 +106,4 @@ def remove_alarm(id=None):
 
 # main関数を実行する
 if __name__ == '__main__':
-    main();
+    main()

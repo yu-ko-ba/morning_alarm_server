@@ -41,18 +41,23 @@ def hello_world():
     return "Hello World!"
 
 
+# アラームリストのJSONを返す
 def get_alarm_list():
     return json.load(open("./json/alarm_list.json", "r", encoding="UTF-8"))
 
 
+# アラームリストを返すAPI
 @flask.route("/get_alarm_list")
 def alarm_list():
     return jsonify(get_alarm_list())
 
 
+# アラームリストにアラームを追加する
 def add_to_json(time, debug=False):
     file = open("./json/alarm_list.json", 'r', encoding="UTF-8")
     data = json.load(file)
+    # アラームにIDを割り当てる
+    # '00'から'99'までで空いてる一番若い番号を割り当てる
     for i in range(100):
         i = str(i).zfill(2)
         if i not in data["data"]:
@@ -67,6 +72,7 @@ def add_to_json(time, debug=False):
         print("新しく追加することができませんでした。")
 
 
+# アラームリストにアラームを追加するためのAPI
 @flask.route("/add/<time>")
 def add_alarm(time=None):
     add_to_json(time)

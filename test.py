@@ -1,7 +1,9 @@
 from flask import Flask, jsonify
 import main, os, json, time
 
-main.main(True)
+main.add_to_json("23:59", True)
+
+# main.main(True)
 
 # main.create_json_file(True)
 # main.add_to_json("12:34")

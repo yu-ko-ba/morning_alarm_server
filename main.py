@@ -106,6 +106,32 @@ def remove_alarm(id=None):
     return jsonify(get_alarm_list())
 
 
+# アラームの時間を変更する関数
+def change_the_alarm_time(id, new_time, debug=False):
+    json_data = get_alarm_list()
+
+    if debug:
+        print("old")
+        print(json_data)
+        print("---------------------------------------------------------")
+
+    json_data["data"][id] = new_time
+    if debug:
+        print("new")
+        print(json_data)
+
+    json_data["last_updated"] = time.time()
+    with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
+        json.dump(json_data, f, indent=4)
+
+
+# アラームの時間を変更するAPI
+@flask.route("/change/<id>/<new_time>")
+def change_alarm(id=None, new_time=None):
+    change_the_alarm_time(id, new_time)
+    return jsonify(get_alarm_list())
+
+
 # main関数を実行する
 if __name__ == '__main__':
     main()

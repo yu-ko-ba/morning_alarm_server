@@ -1,7 +1,13 @@
 from flask import Flask, jsonify
 import main, os, json, time
 
-main.add_to_json("23:59", True)
+main.main(True)
+# main.create_json_file(True)
+# main.add_to_json("10:34", debug=True)
+# main.add_to_json("11:34", debug=True)
+# main.add_to_json("12:34", debug=True)
+# main.change_the_alarm_time("00", "11:50", True)
+# main.add_to_json("23:59", True)
 
 # main.main(True)
 

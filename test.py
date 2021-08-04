@@ -1,7 +1,16 @@
-from flask import Flask, jsonify
-import main, os, json, time
+# from flask import Flask, jsonify
+import main
+# import os
+# import json
+# import time
+
 
 main.main(True)
+
+# main.print_line()
+
+# print(main.alarm_list())
+# main.main(True)
 # main.create_json_file(True)
 # main.add_to_json("10:34", debug=True)
 # main.add_to_json("11:34", debug=True)
@@ -24,7 +33,7 @@ main.main(True)
 # main.create_json_file(False)
 
 # for i in range(0, 101):
-    # main.add_to_json("12:34", debug=True)
+    # main.add_alarm("12:34", debug=True)
 
 # main.add_to_json("12:34", debug=True)
 # main.remove_alarm_from_json("01")

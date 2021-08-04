@@ -1,7 +1,11 @@
 # モーニングアラームのアラームリストを管理するサーバー
 from flask import Flask, jsonify
-import os, json, time
+import os
+import json
+import time
 
+
+alarm_list_file_path = "./json/alarm_list.json"
 
 flask = Flask(__name__)
 
@@ -19,21 +23,50 @@ def main(debug=False):
     flask.run(debug=debug)
 
 
+def print_line(line_length=100):
+    line = ""
+    for i in range(0, line_length + 1):
+        line += "-"
+    print(line)
+
+
 # アラームのリストを記録するJSONファイルが存在しなかったら作る、ディレクトリも無かったら作る
 def create_json_file(force=False):
     # JSONファイルを入れるディレクトリが存在しなかったら作る
     os.makedirs("./json", exist_ok=True)
 
     # JSONファイルが存在しなかったら作る
-    path = "./json/alarm_list.json"
-    if not os.path.isfile(path) or force:
-        with open(path, "w", encoding="UTF-8") as file:
+    if not os.path.isfile(alarm_list_file_path) or force:
+        with open(alarm_list_file_path, "w", encoding="UTF-8") as file:
             data = {
-                    "last_updated" : time.time(),
-                    "data" : {
+                    "last_updated": time.time(),
+                    "data": {
                         }
                     }
             json.dump(data, file, indent=4)
+
+
+# file_pathの中身をJSONデータに変換して返す
+def load_json(file_path, encoding="UTF-8"):
+    return json.load(open(file_path, "r", encoding=encoding))
+
+
+# file_pathにJSONデータを上書きする
+def write_json(data, file_path, indent=4):
+    # 最終更新日時を更新する
+    data["last_updated"] = time.time()
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=indent)
+
+
+# アラームリストのJSONを返す
+def get_alarm_list():
+    return load_json(alarm_list_file_path)
+
+
+# アラームリストをJSONファイルに上書き保存する
+def set_alarm_list(data):
+    write_json(data, alarm_list_file_path)
 
 
 @flask.route("/")
@@ -41,35 +74,34 @@ def hello_world():
     return "Hello World!"
 
 
-# アラームリストのJSONを返す
-def get_alarm_list():
-    return json.load(open("./json/alarm_list.json", "r", encoding="UTF-8"))
-
-
 # アラームリストを返すAPI
+@flask.route("/show")
+@flask.route("/get")
 @flask.route("/get_alarm_list")
-def alarm_list():
+def get_alarm_list_api():
     return jsonify(get_alarm_list())
 
 
-# アラームリストに時間を追加する
-def add_to_json(add_time, debug=False):
-    file = open("./json/alarm_list.json", 'r', encoding="UTF-8")
-    data = json.load(file)
+# アラームリストにアラームの時間を追加する
+def add_alarm(add_time, debug=False):
+    # JSONのデータを取得する
+    data = get_alarm_list()
     # アラームにIDを割り当てる
     # '00'から'99'までで空いてる一番若い番号を割り当てる
     for i in range(100):
+        # iの値を文字列型に変換する、ついでに0埋め2ケタ表示にする
         i = str(i).zfill(2)
+        # IDにiの値が使われていなかったらそれを使う
         if i not in data["data"]:
             data["data"][i] = add_time
-            # 最終更新日時を更新する
-            data["last_updated"] = time.time()
+
             # JSONファイルに書き込む
-            with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
-                json.dump(data, f, indent=4)
-            # IDを割り振れたらこの関数を終了する
+            set_alarm_list(data)
+
             if debug:
                 print("ID: " + i + "を割り当てました")
+
+            # IDを割り振れたらこの関数を終了する
             return
 
     # IDが'00'から'99'まですべて割り振られていたらメッセージを出力する
@@ -79,55 +111,56 @@ def add_to_json(add_time, debug=False):
 
 # アラームリストにアラームを追加するためのAPI
 @flask.route("/add/<time>")
-def add_alarm(time=None):
-    add_to_json(time)
+def add_alarm_api(time=None):
+    add_alarm(time)
     return jsonify(get_alarm_list())
 
 
 # アラームを削除する関数
-def remove_alarm_from_json(id):
+def delete_alarm(id):
     # JSONファイルからデータを読み込む
-    file = open("./json/alarm_list.json", 'r', encoding="UTF-8")
-    # 読み込んだデータをJSON形式に変換する
-    data = json.load(file)
+    data = get_alarm_list()
+
     # 指定されたIDのアラームを削除する
     del data["data"][id]
-    # 最終更新日時を更新する
-    data["last_updated"] = time.time()
+
     # JSONファイルに書き込む
-    with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
-        json.dump(data, f, indent=4)
+    set_alarm_list(data)
 
 
 # アラームを削除するAPI
 @flask.route("/remove/<id>")
-def remove_alarm(id=None):
-    remove_alarm_from_json(id)
+@flask.route("/delete/<id>")
+def delete_alarm_api(id=None):
+    delete_alarm(id)
     return jsonify(get_alarm_list())
 
 
 # アラームの時間を変更する関数
 def change_the_alarm_time(id, new_time, debug=False):
-    json_data = get_alarm_list()
+    # アラームリストを読み込む
+    data = get_alarm_list()
 
     if debug:
         print("old")
-        print(json_data)
-        print("---------------------------------------------------------")
+        print(data)
+        print_line()
 
-    json_data["data"][id] = new_time
+    # 指定されたIDの時間を変更する
+    data["data"][id] = new_time
+
     if debug:
         print("new")
-        print(json_data)
+        print(data)
+        print_line()
 
-    json_data["last_updated"] = time.time()
-    with open("./json/alarm_list.json", 'w', encoding="UTF-8") as f:
-        json.dump(json_data, f, indent=4)
+    # 変更を保存する
+    set_alarm_list(data)
 
 
 # アラームの時間を変更するAPI
 @flask.route("/change/<id>/<new_time>")
-def change_alarm(id=None, new_time=None):
+def change_the_alarm_time_api(id=None, new_time=None):
     change_the_alarm_time(id, new_time)
     return jsonify(get_alarm_list())
 

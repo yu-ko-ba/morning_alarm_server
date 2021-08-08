@@ -20,7 +20,7 @@ def main(debug=False):
     create_json_file()
 
     # サーバーを起動する
-    flask.run(debug=debug)
+    flask.run(host="192.168.128.207", port=5000, debug=debug)
 
 
 def print_line(line_length=100):
